@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView message, base_on;
 
-    static EditText edit_text;
+    public static EditText edit_text;
 
     Button btn_submit;
 
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     static long textStartOffset = 2000;
     static long mainStarDuration = 1000;
 
-    static long lifeOfMessages = (textAppearAndDisappear + textStartOffset)*messages.length;
+    static long lifeOfMessages = (textAppearAndDisappear + textStartOffset) * messages.length;
 
     static boolean start = false;
 
@@ -99,8 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 if (index < messages.length) {
                     message.setText(messages[index++]);
                     message.startAnimation(alphaAnimationMessageAppear);
-                }
-                else{
+                } else {
                     message.setAlpha(0f);
                     main_screen.removeView(message_screen);
 
@@ -129,14 +128,14 @@ public class MainActivity extends AppCompatActivity {
                 message.setPadding(0, HEIGHT / 2 - Background.radius - Background.shadow - (int) message.getTextSize() * 2, 0, 0);
                 message.startAnimation(alphaAnimationMessageAppear);
 
-                edit_text.getLayoutParams().width= WIDTH/2;
-                edit_text.setX(WIDTH/4f);
+                edit_text.getLayoutParams().width = WIDTH / 2;
+                edit_text.setX(WIDTH / 4f);
                 edit_text.setY(HEIGHT - Background.radius - Background.shadow);
 
                 edit_text.startAnimation(alphaAnimationMessageAppear);
 
-                btn_submit.getLayoutParams().width = WIDTH/4;
-                btn_submit.setX(3*edit_text.getX()/2);
+                btn_submit.getLayoutParams().width = WIDTH / 4;
+                btn_submit.setX(3 * edit_text.getX() / 2);
                 btn_submit.setY(edit_text.getY() + 20);
 
 
@@ -172,34 +171,31 @@ public class MainActivity extends AppCompatActivity {
 
             String text = String.valueOf(edit_text.getText()).trim();
             Vector<String> strings = new Vector<>();
-            String string = "";
-            for(int i = 0; i < text.length(); i++){
-                if(text.charAt(i) == ' ' || i + 1 == text.length()){
-                    strings.add(string + (i + 1 == text.length() ? text.charAt(i) : ""));
-                    string = "";
-                }
-                else string += text.charAt(i);
+            StringBuilder string = new StringBuilder();
+            for (int i = 0; i < text.length(); i++) {
+                if (text.charAt(i) == ' ' || i + 1 == text.length()) {
+                    strings.add(string.toString() + (i + 1 == text.length() ? text.charAt(i) : ""));
+                    string = new StringBuilder();
+                } else string.append(text.charAt(i));
             }
             Vector<String> result = new Vector<>();
-            String str = "";
-            for(int i = 0; i < strings.size(); i++){
-                if((str + strings.get(i)).length() < 20){
-                    str += strings.get(i) + " ";
-                }
-                else{
-                    result.add(str.trim());
-                    str = strings.get(i);
+            StringBuilder str = new StringBuilder();
+            for (int i = 0; i < strings.size(); i++) {
+                if ((str + strings.get(i)).length() < 20) {
+                    str.append(strings.get(i)).append(" ");
+                } else {
+                    result.add(str.toString().trim());
+                    str = new StringBuilder(strings.get(i));
                 }
             }
-            if(str != "") result.add(str);
-            System.out.println("maxx" + Math.min(result.size(), maxLine));
-            for(int i=0; i< Math.min(result.size(), maxLine); i++){
-                if(i == Math.min(result.size(), maxLine) - 1){
-                    if(Math.min(result.size(), maxLine) == maxLine){
+            if (!str.toString().equals("")) result.add(str.toString());
+            for (int i = 0; i < Math.min(result.size(), maxLine); i++) {
+                if (i == Math.min(result.size(), maxLine) - 1) {
+                    if (Math.min(result.size(), maxLine) == maxLine) {
                         trouble.add(result.get(i) + "...");
                     }
-                }
-                else{
+                    trouble.add(result.get(i));
+                } else {
                     trouble.add(result.get(i));
                 }
             }
@@ -211,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void AnhXa(){
+    void AnhXa() {
         intro_screen = findViewById(R.id.intro_screen);
         background_screen = findViewById(R.id.background_screen);
         main_screen = findViewById(R.id.main_screen);
