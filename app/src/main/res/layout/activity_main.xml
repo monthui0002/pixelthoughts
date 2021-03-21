@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/background_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1b2735">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/intro_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/coming_soon"
+            android:gravity="center"
+            android:text="@string/name"
+            android:textColor="@color/white"
+            android:textSize="40sp" />
+
+        <TextView
+            android:id="@+id/intro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/name"
+            android:fontFamily="@font/coming_soon"
+            android:gravity="center"
+            android:text="@string/info"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/message_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/coming_soon"
+            android:gravity="center_horizontal"
+            android:text="@string/messages"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_shape"
+            android:hint="@string/question"
+            android:padding="10sp"
+            android:lines="1"
+            android:textColorHint="#4D5967"
+            android:textSize="15sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_text"
+            android:background="@drawable/btn_shape"
+            android:text="@string/btn_submit"
+            android:textSize="15sp"
+            android:textColor="@color/white"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/main_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/background_info_screen"
+        android:layout_width="350sp"
+        android:layout_height="250sp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="#121B25"
+        android:padding="20sp" />
+
+    <RelativeLayout
+        android:id="@+id/info_screen"
+        android:layout_width="350sp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:paddingTop="40dp">
+
+        <TextView
+            android:id="@+id/message2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/coming_soon"
+            android:gravity="center"
+            android:text="Hope you feel a little less stressed and little more connected"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/base_on"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/message2"
+            android:fontFamily="@font/coming_soon"
+            android:gravity="center"
+            android:paddingTop="30sp"
+            android:text="@string/link"
+            android:textColor="#fff"
+            android:textColorLink="#fff"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/base_on"
+            android:fontFamily="@font/coming_soon"
+            android:gravity="center"
+            android:paddingTop="30sp"
+            android:text="@string/author"
+            android:textColor="#fff"
+            android:textSize="10sp" />
+    </RelativeLayout>
+</RelativeLayout>
