@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.Vector;
 
 
@@ -24,11 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
     TextView message, base_on;
 
-    public static EditText edit_text;
+    static EditText edit_text;
 
     Button btn_submit;
 
     MediaPlayer mediaPlayer;
+    static int timeMedia = 0;
 
     static String[] messages = {"Take a deep breath in....", "....and breathe out", "Everything is okay", "Your life is okay",
             "Life is much grander than this thought", "The universe is over 93 billion light-years in distance", "Our galaxy is small",
@@ -37,11 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
     int index = 0;
 
-    static long textAppearAndDisappear = 2000;
-    static long textStartOffset = 2000;
-    static long mainStarDuration = 1000;
-
-    static long lifeOfMessages = (textAppearAndDisappear + textStartOffset) * messages.length;
+    static final long textAppearAndDisappear = 2000;
+    static final long textStartOffset = 3000;
+    static final long mainStarDuration = 1000;
+    static final long timeMainStarDisappear = (messages.length - 1)*(textAppearAndDisappear*2 + textStartOffset) - 2*textAppearAndDisappear; //89s
 
     static boolean start = false;
 
@@ -53,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AnhXa();
+        getId();
 
-        System.out.println("time---------------------" + lifeOfMessages);
         mediaPlayer = MediaPlayer.create(this, R.raw.background);
+        mediaPlayer.setOnCompletionListener(MediaPlayer::release);
 
         final Background background = new Background(this);
 
@@ -123,10 +124,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mediaPlayer.start();
-
                 message.setPadding(0, HEIGHT / 2 - Background.radius - Background.shadow - (int) message.getTextSize() * 2, 0, 0);
                 message.startAnimation(alphaAnimationMessageAppear);
+
 
                 edit_text.getLayoutParams().width = WIDTH / 2;
                 edit_text.setX(WIDTH / 4f);
@@ -134,22 +134,23 @@ public class MainActivity extends AppCompatActivity {
 
                 edit_text.startAnimation(alphaAnimationMessageAppear);
 
+
                 btn_submit.getLayoutParams().width = WIDTH / 4;
                 btn_submit.setX(3 * edit_text.getX() / 2);
                 btn_submit.setY(edit_text.getY() + 20);
 
-
                 btn_submit.startAnimation(alphaAnimationMessageAppear);
 
-                main_screen.addView(background);
+
                 main_screen.setAlpha(0f);
                 info_screen.setAlpha(0f);
                 background_info_screen.setAlpha(0f);
-                intro_screen.setAlpha(0.0f);
 
+                main_screen.addView(background);
                 main_screen.addView(background_info_screen);
                 main_screen.addView(info_screen);
 
+                background_screen.removeView(intro_screen);
                 background_screen.addView(main_screen);
                 background_screen.addView(message_screen);
 
@@ -168,37 +169,8 @@ public class MainActivity extends AppCompatActivity {
 
         btn_submit.setOnClickListener(v -> {
             start = true;
-
-            String text = String.valueOf(edit_text.getText()).trim();
-            Vector<String> strings = new Vector<>();
-            StringBuilder string = new StringBuilder();
-            for (int i = 0; i < text.length(); i++) {
-                if (text.charAt(i) == ' ' || i + 1 == text.length()) {
-                    strings.add(string.toString() + (i + 1 == text.length() ? text.charAt(i) : ""));
-                    string = new StringBuilder();
-                } else string.append(text.charAt(i));
-            }
-            Vector<String> result = new Vector<>();
-            StringBuilder str = new StringBuilder();
-            for (int i = 0; i < strings.size(); i++) {
-                if ((str + strings.get(i)).length() < 20) {
-                    str.append(strings.get(i)).append(" ");
-                } else {
-                    result.add(str.toString().trim());
-                    str = new StringBuilder(strings.get(i));
-                }
-            }
-            if (!str.toString().equals("")) result.add(str.toString());
-            for (int i = 0; i < Math.min(result.size(), maxLine); i++) {
-                if (i == Math.min(result.size(), maxLine) - 1) {
-                    if (Math.min(result.size(), maxLine) == maxLine) {
-                        trouble.add(result.get(i) + "...");
-                    }
-                    trouble.add(result.get(i));
-                } else {
-                    trouble.add(result.get(i));
-                }
-            }
+            background.timeStartZoomOut = System.currentTimeMillis();
+            getEditText();
 
             edit_text.animate().alpha(0f).setDuration(2000).setListener(null);
             btn_submit.animate().alpha(0f).setDuration(2000).setListener(null);
@@ -207,7 +179,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void AnhXa() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlayer.pause();
+        timeMedia = mediaPlayer.getCurrentPosition();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mediaPlayer.seekTo(timeMedia);
+        mediaPlayer.start();
+    }
+
+    protected void getId() {
         intro_screen = findViewById(R.id.intro_screen);
         background_screen = findViewById(R.id.background_screen);
         main_screen = findViewById(R.id.main_screen);
@@ -219,5 +205,38 @@ public class MainActivity extends AppCompatActivity {
         message = findViewById(R.id.message);
         edit_text = findViewById(R.id.edit_text);
         btn_submit = findViewById(R.id.btn_submit);
+    }
+
+    protected void getEditText() {
+        String text = String.valueOf(edit_text.getText()).trim();
+        Vector<String> strings = new Vector<>();
+        StringBuilder string = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == ' ' || i + 1 == text.length()) {
+                strings.add(string.toString() + (i + 1 == text.length() ? text.charAt(i) : ""));
+                string = new StringBuilder();
+            } else string.append(text.charAt(i));
+        }
+
+        Vector<String> result = new Vector<>();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < strings.size(); i++) {
+            if ((str + strings.get(i)).length() < 20) {
+                str.append(strings.get(i)).append(" ");
+            } else {
+                result.add(str.toString().trim());
+                str = new StringBuilder(strings.get(i));
+            }
+        }
+
+        if (!str.toString().equals("")) result.add(str.toString());
+        for (int i = 0; i < Math.min(result.size(), maxLine); i++) {
+            if (i == Math.min(result.size(), maxLine) - 1) {
+                if (Math.min(result.size(), maxLine) == maxLine) {
+                    trouble.add(result.get(i) + "...");
+                }
+            }
+            trouble.add(result.get(i));
+        }
     }
 }
