@@ -1,7 +1,6 @@
 package com.haumon.pixelthoughts;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -12,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.util.Calendar;
 import java.util.Vector;
 
 
@@ -234,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
             if (i == Math.min(result.size(), maxLine) - 1) {
                 if (Math.min(result.size(), maxLine) == maxLine) {
                     trouble.add(result.get(i) + "...");
+                    break;
                 }
             }
             trouble.add(result.get(i));

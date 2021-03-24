@@ -20,15 +20,16 @@ class Background extends View {
 
     static int numOfStars = 150;
     static int tinyMainStar = 3;
+
     double queueStars = 1;
 
     long timeStartZoomOut;
-    float timeResizeMainStar = 100;
+    float timeResizeMainStar = 200;
+
     float zoomOut = 0;
     float zoomOutSpeed = timeResizeMainStar * (radius - tinyMainStar) / MainActivity.timeMainStarDisappear;
 
-    float distance = radius / 4f;
-    float distanceSpeed = 0.007f;
+    float distance = radius / 7f;
 
     static Vector<Star> stars = new Vector<>();
 
@@ -37,6 +38,7 @@ class Background extends View {
 
     public Background(Context context) {
         super(context);
+
         paintText.setColor(Color.BLACK);
         paintMainStar.setShadowLayer(shadow, 0, 0, Color.parseColor("#FF8C00"));
         paintText.setTextAlign(Paint.Align.CENTER);
@@ -60,22 +62,20 @@ class Background extends View {
 
         float r = radius - zoomOut >= tinyMainStar ? radius - zoomOut : tinyMainStar;
 
-        if (y - zoomOut > -tinyMainStar) canvas.drawCircle(x, y - zoomOut, r, paint);
-        else return;
+        if (y - zoomOut > -tinyMainStar) canvas.drawCircle(x, y - zoomOut, r, paint); else return;
         if (r == tinyMainStar) {
             zoomOut += 3f;
             r -= 2;
         }
-//        System.out.println(zoomOutSpeed + " - " + zoomOut + " " + timeResizeMainStar + " " + (radius - tinyMainStar) + "/" +MainActivity.timeMainStarDisappear);
         if (MainActivity.start) {
-//            System.out.println(System.currentTimeMillis() + "-" + timeStartZoomOut + "=" + (System.currentTimeMillis() - timeStartZoomOut) + " = " + timeResizeMainStar);
             if(System.currentTimeMillis() - timeStartZoomOut >= timeResizeMainStar){
-                System.out.println(zoomOut + " - " + radius);
                 zoomOut += zoomOutSpeed;
                 timeStartZoomOut = System.currentTimeMillis();
+                distance = r/7;
             }
-            distance -= distanceSpeed;
+
             paintText.setTextSize(r / 6);
+
             for (int i = 0; i < MainActivity.trouble.size(); i++) {
                 canvas.drawText(MainActivity.trouble.get(i), x, y - zoomOut - MainActivity.trouble.size() * distance / 2 + distance * i, paintText);
             }
