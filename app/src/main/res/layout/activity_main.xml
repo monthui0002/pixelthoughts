@@ -57,7 +57,7 @@
             android:padding="10sp"
             android:lines="1"
             android:textColorHint="#4D5967"
-            android:textSize="15sp" />
+            android:textSize="15sp"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_submit"

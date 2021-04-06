@@ -1,20 +1,31 @@
 package com.haumon.pixelthoughts;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import java.util.Vector;
 
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnKeyboardVisibilityListener {
     static final int WIDTH = Resources.getSystem().getDisplayMetrics().widthPixels;
     static final int HEIGHT = Resources.getSystem().getDisplayMetrics().heightPixels;
 
@@ -22,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView message, base_on;
 
+    @SuppressLint("StaticFieldLeak")
     static EditText edit_text;
 
     Button btn_submit;
@@ -39,12 +51,14 @@ public class MainActivity extends AppCompatActivity {
     static final long textAppearAndDisappear = 2000;
     static final long textStartOffset = 3000;
     static final long mainStarDuration = 1000;
-    static final long timeMainStarDisappear = (messages.length - 1)*(textAppearAndDisappear*2 + textStartOffset) - 2*textAppearAndDisappear; //89s
+    static final long timeMainStarDisappear = (messages.length - 1) * (textAppearAndDisappear * 2 + textStartOffset) - 2 * textAppearAndDisappear; //89s
 
     static boolean start = false;
 
     static Vector<String> trouble = new Vector<>();
     static int maxLine = 4;
+
+    static int keyboardHeight = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,8 +187,10 @@ public class MainActivity extends AppCompatActivity {
             btn_submit.animate().alpha(0f).setDuration(2000).setListener(null);
             message.startAnimation(alphaAnimationMessageDisappear);
         });
-
+        setKeyboardVisibilityListener(this::onVisibilityChanged);
+        setupUI(background_screen);
     }
+
 
     @Override
     protected void onPause() {
@@ -183,12 +199,14 @@ public class MainActivity extends AppCompatActivity {
         timeMedia = mediaPlayer.getCurrentPosition();
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
         mediaPlayer.seekTo(timeMedia);
         mediaPlayer.start();
     }
+
 
     protected void getId() {
         intro_screen = findViewById(R.id.intro_screen);
@@ -203,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         edit_text = findViewById(R.id.edit_text);
         btn_submit = findViewById(R.id.btn_submit);
     }
+
 
     protected void getEditText() {
         String text = String.valueOf(edit_text.getText()).trim();
@@ -235,6 +254,77 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             trouble.add(result.get(i));
+        }
+    }
+
+
+    @Override
+    public void onVisibilityChanged(boolean visible) {
+        if (visible) {
+            edit_text.setX(WIDTH / 4f);
+            edit_text.setY(keyboardHeight);
+        } else {
+            edit_text.setX(WIDTH / 4f);
+            edit_text.setY(HEIGHT - Background.radius - Background.shadow);
+        }
+    }
+
+    public interface OnKeyboardVisibilityListener {
+        void onVisibilityChanged(boolean visible);
+    }
+
+    private void setKeyboardVisibilityListener(final OnKeyboardVisibilityListener onKeyboardVisibilityListener) {
+        final View parentView = ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+        parentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            private boolean alreadyOpen;
+            private final int defaultKeyboardHeightDP = 100;
+            private final int EstimatedKeyboardDP = defaultKeyboardHeightDP + (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 48 : 0);
+            private final Rect rect = new Rect();
+
+            @Override
+            public void onGlobalLayout() {
+                int estimatedKeyboardHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, EstimatedKeyboardDP, parentView.getResources().getDisplayMetrics());
+                parentView.getWindowVisibleDisplayFrame(rect);
+                keyboardHeight = parentView.getRootView().getHeight() - (rect.bottom - rect.top);
+                boolean isShown = keyboardHeight >= estimatedKeyboardHeight;
+
+                if (isShown == alreadyOpen) {
+                    Log.i("Keyboard state", "Ignoring global layout change...");
+                    return;
+                }
+                alreadyOpen = isShown;
+                onKeyboardVisibilityListener.onVisibilityChanged(isShown);
+            }
+        });
+    }
+
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if (inputMethodManager.isAcceptingText()) {
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public void setupUI(View view) {
+
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener((v, event) -> {
+                hideSoftKeyboard(MainActivity.this);
+                return false;
+            });
+        }
+
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
         }
     }
 }

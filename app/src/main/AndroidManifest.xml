@@ -11,6 +11,7 @@
         android:theme="@style/Theme.PixelThoughts">
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait"
             >
             <intent-filter>

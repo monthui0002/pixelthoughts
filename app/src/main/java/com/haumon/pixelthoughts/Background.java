@@ -71,9 +71,8 @@ class Background extends View {
             if(System.currentTimeMillis() - timeStartZoomOut >= timeResizeMainStar){
                 zoomOut += zoomOutSpeed;
                 timeStartZoomOut = System.currentTimeMillis();
-                distance = r/7;
             }
-
+            distance = r/7;
             paintText.setTextSize(r / 6);
 
             for (int i = 0; i < MainActivity.trouble.size(); i++) {
